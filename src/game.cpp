@@ -8,8 +8,8 @@
 GameBoard::GameBoard() : board(State::Zero()) {
 }
 
-bool GameBoard::check_won(Spot player) {
-    assert(player == Spot::Player1 || player == Spot::Player2);
+bool GameBoard::check_won(Player player) {
+    assert(player == Player::Player1 || player == Player::Player2);
     const long rows = board.rows();
     const long cols = board.cols();
 
@@ -49,14 +49,14 @@ bool GameBoard::check_won(Spot player) {
 }
 
 bool GameBoard::check_won() {
-    return check_won(Spot::Player1) && check_won(Spot::Player2);
+    return check_won(Player::Player1) && check_won(Player::Player2);
 }
 
-MoveResult GameBoard::move(long col, Spot player) {
-    assert(player == Spot::Player1 || player == Spot::Player2);
+MoveResult GameBoard::move(long col, Player player) {
+    assert(player == Player::Player1 || player == Player::Player2);
     assert(col < board.cols());
     for (long i = board.rows() - 1; i >= 0; i--) {
-        if (board(i, col) != Spot::None) {
+        if (board(i, col) != Player::None) {
             board(i, col) = player;
             return {board, check_won(player)};
         }
@@ -74,12 +74,12 @@ std::ostream &operator<<(std::ostream &out, const GameBoard &board) {
     for (int i = 0; i < rows; i++) {
         out << '|';
         for (int j = 0; j < cols; j++) {
-            Spot value = gbm(i, j);
-            if (value == Spot::Player1)
+            Player value = gbm(i, j);
+            if (value == Player::Player1)
                 out << '+';
-            if (value == Spot::Player2)
+            if (value == Player::Player2)
                 out << '-';
-            if (value == Spot::None)
+            if (value == Player::None)
                 out << ' ';
         }
         out << "|\n";

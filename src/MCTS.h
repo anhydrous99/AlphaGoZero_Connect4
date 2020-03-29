@@ -5,22 +5,23 @@
 #ifndef ALPHAZERO_CONNECT4_MCTS_H
 #define ALPHAZERO_CONNECT4_MCTS_H
 
-#include <vector>
+#include <map>
 #include <cstdint>
-
-struct Dummy {};
+#include "utils.h"
 
 class MCTS {
     float _c_puct;
-    std::vector<Dummy> _visit_count;
-    std::vector<Dummy> _value;
-    std::vector<Dummy> _value_avg;
-    std::vector<Dummy> _probs;
+    std::map<State, Vector7i> _visit_count;
+    std::map<State, Vector7f> _value;
+    std::map<State, Vector7f> _value_avg;
+    std::map<State, Vector7f> _probs;
 
 public:
-    MCTS(float c_punct);
+    explicit MCTS(float c_punct = 1.0f);
     void clear();
     uint64_t size();
+    void find_leaf(const State &state, Player player);
+    bool is_leaf(const State &state);
 };
 
 

@@ -7,8 +7,6 @@
 
 #include <Eigen/Core>
 #include <ostream>
-#include <cstdint>
-#include <utility>
 #include "utils.h"
 
 class GameBoard {
@@ -16,9 +14,9 @@ class GameBoard {
 
 public:
     GameBoard();
-    bool check_won(Spot player);
+    bool check_won(Player player);
     bool check_won();
-    MoveResult move(long col, Spot player);
+    MoveResult move(long col, Player player);
     friend std::ostream &operator<<(std::ostream &out, const GameBoard &board);
 };
 
