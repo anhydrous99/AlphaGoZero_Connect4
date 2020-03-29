@@ -6,15 +6,7 @@
 #define ALPHAZERO_CONNECT4_MODEL_H
 
 #include <torch/torch.h>
-#include <string>
-
-struct TensorPair {
-    torch::Tensor tensor1;
-    torch::Tensor tensor2;
-
-    TensorPair() = default;
-    TensorPair(const torch::Tensor& t1, const torch::Tensor& t2);
-};
+#include "utils.h"
 
 struct ConvBlockImpl : torch::nn::Module {
     ConvBlockImpl(int64_t input_channels, int64_t output_chennels, int64_t kernel_size, bool padding);

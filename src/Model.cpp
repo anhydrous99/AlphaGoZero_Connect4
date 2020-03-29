@@ -5,8 +5,6 @@
 #include "Model.h"
 #include <iostream>
 
-TensorPair::TensorPair(const torch::Tensor &t1, const torch::Tensor &t2) : tensor1(t1), tensor2(t1) {}
-
 ConvBlockImpl::ConvBlockImpl(int64_t input_channels, int64_t output_chennels, int64_t kernel_size, bool padding=true) {
     if (padding)
         conv2D = register_module("conv2D", torch::nn::Conv2d(

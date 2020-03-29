@@ -5,8 +5,6 @@
 #include "game.h"
 #include <cassert>
 
-MoveResult::MoveResult(State st, bool wn) : state(std::move(st)), won(wn) {}
-
 GameBoard::GameBoard() : board(State::Zero()) {
 }
 

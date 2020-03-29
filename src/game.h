@@ -9,22 +9,7 @@
 #include <ostream>
 #include <cstdint>
 #include <utility>
-
-enum Spot {
-    None,
-    Player1,
-    Player2
-};
-
-// -1 for white, 0 for none, 1 for black
-typedef Eigen::Matrix<Spot, 6, 7> State;
-
-struct MoveResult {
-    State state;
-    bool won;
-
-    MoveResult(State st, bool wn);
-};
+#include "utils.h"
 
 class GameBoard {
     State board;
