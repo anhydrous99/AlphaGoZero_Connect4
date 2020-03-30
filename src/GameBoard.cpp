@@ -80,6 +80,7 @@ MoveResult GameBoard::move(int64_t col) {
 MoveResult GameBoard::move(int64_t col, Player player) {
     assert(player == Player::Player1 || player == Player::Player2);
     assert(col < _board.cols());
+    _turn = player;
     change_turn();
     for (long i = _board.rows() - 1; i >= 0; i--) {
         if (_board(i, col) == Player::None) {
