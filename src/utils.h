@@ -30,14 +30,26 @@ struct TensorPair {
     torch::Tensor tensor2;
 
     TensorPair() = default;
-    TensorPair(const torch::Tensor& t1, const torch::Tensor& t2);
+
+    TensorPair(const torch::Tensor &t1, const torch::Tensor &t2);
 };
 
 struct MoveResult {
     State state;
-    bool won;
+    bool done;
 
     MoveResult(State st, bool wn);
+};
+
+struct LeafResult {
+    float value;
+    State current_state;
+    Player current_player;
+    std::vector<State> states;
+    std::vector<int64_t> actions;
+
+    LeafResult(float val, State cur_state, Player pl, std::vector<State> st,
+               std::vector<int64_t> acts);
 };
 
 Vector7f generate_dirichlet(const Vector7d &alpha);

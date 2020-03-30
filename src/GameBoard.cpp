@@ -74,14 +74,13 @@ Player GameBoard::winner() {
 }
 
 MoveResult GameBoard::move(int64_t col) {
-    Player turn = _turn;
-    change_turn();
-    return move(col, turn);
+    return move(col, _turn);
 }
 
 MoveResult GameBoard::move(int64_t col, Player player) {
     assert(player == Player::Player1 || player == Player::Player2);
     assert(col < _board.cols());
+    change_turn();
     for (long i = _board.rows() - 1; i >= 0; i--) {
         if (_board(i, col) == Player::None) {
             _board(i, col) = player;
@@ -98,6 +97,33 @@ std::vector<int64_t> GameBoard::invalid_actions() {
             invalid.push_back(i);
     }
     return invalid;
+}
+
+int64_t GameBoard::invalid_actions_count() {
+    int64_t invalid_count = 0;
+    for (int64_t i = 0; i < _board.cols(); i++) {
+        if (_board(0, i) != Player::None)
+            invalid_count++;
+    }
+    return invalid_count;
+}
+
+std::vector<int64_t> GameBoard::possible_moves() {
+    std::vector<int64_t> valid;
+    for (int64_t i = 0; i < _board.cols(); i++) {
+        if (_board(0, i) == Player::None)
+            valid.push_back(i);
+    }
+    return valid;
+}
+
+int64_t GameBoard::possible_moves_count() {
+    int64_t count = 0;
+    for (int64_t i = 0; i < _board.cols(); i++) {
+        if (_board(0, i) == Player::None)
+            count++;
+    }
+    return count;
 }
 
 std::ostream &operator<<(std::ostream &out, const GameBoard &board) {

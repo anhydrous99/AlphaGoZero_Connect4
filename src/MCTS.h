@@ -8,8 +8,11 @@
 #include <map>
 #include <cstdint>
 #include "utils.h"
+#include "Model.h"
+#include "GameBoard.h"
 
 class MCTS {
+    GameBoard *_game;
     float _c_puct;
     std::map<State, Vector7i> _visit_count;
     std::map<State, Vector7f> _value;
@@ -17,10 +20,10 @@ class MCTS {
     std::map<State, Vector7f> _probs;
 
 public:
-    explicit MCTS(float c_punct = 1.0f);
+    explicit MCTS(GameBoard *game, float c_punct = 1.0f);
     void clear();
     uint64_t size();
-    void find_leaf(const State &state, Player player);
+    LeafResult find_leaf(const State &state, Player player);
     bool is_leaf(const State &state);
 };
 

@@ -25,6 +25,9 @@ public:
     MoveResult move(int64_t col, Player player);
     friend std::ostream &operator<<(std::ostream &out, const GameBoard &board);
     std::vector<int64_t> invalid_actions();
+    int64_t invalid_actions_count();
+    std::vector<int64_t> possible_moves();
+    int64_t possible_moves_count();
 };
 
 std::ostream &operator<<(std::ostream &out, const GameBoard &board);
