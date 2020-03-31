@@ -100,42 +100,22 @@ torch::Tensor toTensor(const Eigen::DenseBase<Derived> &b) {
     return out_tensor;
 }
 
-template<typename T, int N, int M>
-Eigen::Matrix<T, N, M> toEigenMatrix(const torch::Tensor &tensor) {
-    assert(tensor.scalar_type() == get_torch_type<T>());
+template<typename Derived>
+Derived toEigen(const torch::Tensor &tensor) {
+    typedef typename Eigen::internal::traits<Derived>::Scalar scalar_type;
+    assert(tensor.scalar_type() == get_torch_type<scalar_type>());
     assert(tensor.dim() <= 2);
     auto shape = tensor.sizes();
-    assert(shape[0] == N || N == Eigen::Dynamic);
-    assert(((shape.size() == 2) ? shape[1] == M : 1 == M) || M == Eigen::Dynamic);
-    int64_t size = (shape.size() == 2) ? N * M : N;
-    Eigen::Matrix<T, N, M> out_matrix = (shape.size() == 2) ? Eigen::Matrix<T, N, M>::Zero(shape[0], shape[1])
-                                                            : Eigen::Matrix<T, N, M>::Zero(shape[0], 1);
-    T *out_data = &out_matrix(0);
-    const T *in_data = tensor.data_ptr<T>();
+    int64_t size = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<>());
+    Derived out_matrix = (shape.size() == 2) ? Derived::Zero(shape[0], shape[1]) : Derived::Zero(shape[0], 1);
+
+    scalar_type *out_data = &out_matrix(0);
+    const scalar_type *in_data = tensor.data_ptr<scalar_type>();
     if (shape.size() == 2)
         std::reverse_copy(in_data, in_data + size, out_data);
     else
         std::copy(in_data, in_data + size, out_data);
     return out_matrix;
-}
-
-template<typename T, int N, int M>
-Eigen::Array<T, N, M> toEigenArray(const torch::Tensor &tensor) {
-    assert(tensor.scalar_type() == get_torch_type<T>());
-    assert(tensor.dim() <= 2);
-    auto shape = tensor.sizes();
-    assert(shape[0] == N || N == Eigen::Dynamic);
-    assert(((shape.size() == 2) ? shape[1] == M : 1 == M) || M == Eigen::Dynamic);
-    int64_t size = (shape.size() == 2) ? N * M : N;
-    Eigen::Array<T, N, M> out_arr = (shape.size() == 2) ? Eigen::Array<T, N, M>::Zero(shape[0], shape[1])
-                                                        : Eigen::Array<T, N, M>::Zero(shape[0], 1);
-    T *out_data = &out_arr(0);
-    const T *in_data = tensor.data_ptr<T>();
-    if (shape.size() == 2)
-        std::reverse_copy(in_data, in_data + size, out_data);
-    else
-        std::copy(in_data, in_data + size, out_data);
-    return out_arr;
 }
 
 #endif //ALPHAZERO_CONNECT4_UTILS_H
