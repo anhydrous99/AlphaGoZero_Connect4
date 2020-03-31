@@ -7,6 +7,8 @@
 
 #include <torch/torch.h>
 #include <Eigen/Core>
+#include <type_traits>
+#include <numeric>
 #include <limits>
 
 constexpr float inf_float = std::numeric_limits<float>::infinity();
@@ -53,5 +55,87 @@ struct LeafResult {
 };
 
 Vector7f generate_dirichlet(const Vector7d &alpha);
+
+template<typename T>
+constexpr torch::ScalarType get_torch_type() {
+    if (std::is_same<T, int8_t>::value)
+        return torch::kInt8;
+    else if (std::is_same<T, int16_t>::value)
+        return torch::kInt16;
+    else if (std::is_same<T, int32_t>::value)
+        return torch::kInt32;
+    else if (std::is_same<T, int64_t>::value)
+        return torch::kInt64;
+    else if (std::is_same<T, uint8_t>::value)
+        return torch::kUInt8;
+    else if (std::is_same<T, torch::Half>::value)
+        return torch::kFloat16;
+    else if (std::is_same<T, float>::value)
+        return torch::kFloat32;
+    else if (std::is_same<T, double>::value)
+        return torch::kFloat64;
+    else {
+        std::cerr << "Error: type not supported";
+        return torch::ScalarType::Undefined;
+    }
+}
+
+template<typename Derived>
+torch::Tensor toTensor(const Eigen::DenseBase<Derived> &b) {
+    typedef typename Eigen::internal::traits<Derived>::Scalar scalar_type;
+
+    std::vector<int64_t> shape = (b.cols() != 1) ? std::vector<int64_t>{b.rows(), b.cols()} : std::vector<int64_t>{
+            b.rows()};
+    int64_t size = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<>());
+    torch::ScalarType dtype = get_torch_type<scalar_type>();
+    auto options = torch::TensorOptions().dtype(dtype);
+    torch::Tensor out_tensor = torch::zeros(shape, options);
+
+    scalar_type *out_data = out_tensor.data_ptr<scalar_type>();
+    const scalar_type *in_data = &b(0);
+    if (shape.size() == 2)
+        std::reverse_copy(in_data, in_data + size, out_data);
+    else
+        std::copy(in_data, in_data + size, out_data);
+    return out_tensor;
+}
+
+template<typename T, int N, int M>
+Eigen::Matrix<T, N, M> toEigenMatrix(const torch::Tensor &tensor) {
+    assert(tensor.scalar_type() == get_torch_type<T>());
+    assert(tensor.dim() <= 2);
+    auto shape = tensor.sizes();
+    assert(shape[0] == N || N == Eigen::Dynamic);
+    assert(((shape.size() == 2) ? shape[1] == M : 1 == M) || M == Eigen::Dynamic);
+    int64_t size = (shape.size() == 2) ? N * M : N;
+    Eigen::Matrix<T, N, M> out_matrix = (shape.size() == 2) ? Eigen::Matrix<T, N, M>::Zero(shape[0], shape[1])
+                                                            : Eigen::Matrix<T, N, M>::Zero(shape[0], 1);
+    T *out_data = &out_matrix(0);
+    const T *in_data = tensor.data_ptr<T>();
+    if (shape.size() == 2)
+        std::reverse_copy(in_data, in_data + size, out_data);
+    else
+        std::copy(in_data, in_data + size, out_data);
+    return out_matrix;
+}
+
+template<typename T, int N, int M>
+Eigen::Array<T, N, M> toEigenArray(const torch::Tensor &tensor) {
+    assert(tensor.scalar_type() == get_torch_type<T>());
+    assert(tensor.dim() <= 2);
+    auto shape = tensor.sizes();
+    assert(shape[0] == N || N == Eigen::Dynamic);
+    assert(((shape.size() == 2) ? shape[1] == M : 1 == M) || M == Eigen::Dynamic);
+    int64_t size = (shape.size() == 2) ? N * M : N;
+    Eigen::Array<T, N, M> out_arr = (shape.size() == 2) ? Eigen::Array<T, N, M>::Zero(shape[0], shape[1])
+                                                        : Eigen::Array<T, N, M>::Zero(shape[0], 1);
+    T *out_data = &out_arr(0);
+    const T *in_data = tensor.data_ptr<T>();
+    if (shape.size() == 2)
+        std::reverse_copy(in_data, in_data + size, out_data);
+    else
+        std::copy(in_data, in_data + size, out_data);
+    return out_arr;
+}
 
 #endif //ALPHAZERO_CONNECT4_UTILS_H
