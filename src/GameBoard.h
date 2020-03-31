@@ -30,6 +30,7 @@ public:
     int64_t possible_moves_count();
     State get_state();
     torch::Tensor get_state_tensor();
+    Player get_current_turn();
 
     friend std::ostream &operator<<(std::ostream &out, const GameBoard &board);
 };

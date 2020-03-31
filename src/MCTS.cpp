@@ -4,9 +4,11 @@
 
 #include "MCTS.h"
 #include <vector>
+#include <set>
 
-MCTS::MCTS(GameBoard *game, float c_puct) :  _c_puct(c_puct) {
+MCTS::MCTS(GameBoard *game, Model *net, float c_puct) :  _c_puct(c_puct) {
     _game = game;
+    _net = net;
 }
 
 void MCTS::clear() {
@@ -62,4 +64,33 @@ LeafResult MCTS::find_leaf(const State &state, Player player) {
 
 bool MCTS::is_leaf(const State &state) {
     return _probs.find(state) != _probs.end();
+}
+
+void MCTS::search_minibatch(int64_t count) {
+    std::vector<VSAT> backup_queue;
+    std::vector<State> expand_states;
+    std::vector<Player> expand_players;
+    std::vector<SAT> expand_queue;
+    std::set<State> planned;
+
+    for (int i = 0; i < count; i++) {
+        LeafResult result = find_leaf(_game->get_state(), _game->get_current_turn());
+        if (result.value == inf_float)
+            backup_queue.emplace_back(result.value, result.states, result.actions);
+        else {
+            if (planned.find(result.current_state) == planned.end()) {
+                planned.insert(result.current_state);
+                expand_states.push_back(result.current_state);
+                expand_players.push_back(result.current_player);
+                expand_queue.emplace_back(result.current_state, result.states, result.actions);
+            }
+        }
+    }
+
+    // Do expansion of nodes
+    if (!expand_queue.empty()) {
+        torch::Tensor batch_tensor = get_states_tensors(expand_states);
+        TensorPair pair = (*_net)->forward(batch_tensor);
+        torch::Tensor prob_tensor = torch::softmax(pair.tensor1, 1);
+    }
 }

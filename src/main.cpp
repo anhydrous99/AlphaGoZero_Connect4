@@ -1,5 +1,7 @@
 #include <iostream>
 #include "GameBoard.h"
+#include "Model.h"
+#include "MCTS.h"
 
 int main() {
     auto board = GameBoard();

@@ -22,6 +22,12 @@ LeafResult::LeafResult(float val, State cur_state, Player pl, std::vector<State>
         : value(val), current_state(std::move(cur_state)), current_player(pl), states(std::move(st)),
           actions(std::move(acts)) {}
 
+VSAT::VSAT(float val, std::vector<State> sts, std::vector<int64_t> acts)
+        : value(val), states(std::move(sts)), actions(std::move(acts)) {}
+
+SAT::SAT(State st, std::vector<State> sts, std::vector<int64_t> acts)
+        : state(std::move(st)), states(std::move(sts)), actions(std::move(acts)) {}
+
 Vector7f generate_dirichlet(const Vector7d &alpha) {
     Vector7d output(Vector7d::Zero());
     double *output_ptr = output.data();
@@ -40,4 +46,26 @@ Vector7f generate_dirichlet(const Vector7d &alpha) {
     gsl_rng_free(r);
     Vector7f output_float = output.cast<float>();
     return output_float;
+}
+
+torch::Tensor get_state_tensor(const State &state) {
+    torch::Tensor output_tensor = torch::zeros({2, 6, 7}, torch::dtype(torch::kFloat32));
+    auto accessor = output_tensor.accessor<float, 3>();
+    for (auto col = 0; col < state.cols(); ++col) {
+        for (auto row = 0; row < state.rows(); ++row) {
+            Player p = state(row, col);
+            if (p == Player::Player1)
+                accessor[0][row][col] = 1.0f;
+            else if (p == Player::Player2)
+                accessor[1][row][col] = 1.0f;
+        }
+    }
+    return output_tensor;
+}
+
+torch::Tensor get_states_tensors(const std::vector<State> &states) {
+    std::vector<torch::Tensor> tensor_list;
+    for (const auto& state : states)
+        tensor_list.push_back(get_state_tensor(state));
+    return torch::stack(tensor_list);
 }

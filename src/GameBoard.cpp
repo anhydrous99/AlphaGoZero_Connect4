@@ -135,6 +135,10 @@ torch::Tensor GameBoard::get_state_tensor() {
     return ::get_state_tensor(_board);
 }
 
+Player GameBoard::get_current_turn() {
+    return _turn;
+}
+
 std::ostream &operator<<(std::ostream &out, const GameBoard &board) {
     const State &gbm = board._board;
     const int rows = gbm.rows();
