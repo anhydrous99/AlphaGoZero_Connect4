@@ -127,6 +127,14 @@ int64_t GameBoard::possible_moves_count() {
     return count;
 }
 
+State GameBoard::get_state() {
+    return _board;
+}
+
+torch::Tensor GameBoard::get_state_tensor() {
+    return ::get_state_tensor(_board);
+}
+
 std::ostream &operator<<(std::ostream &out, const GameBoard &board) {
     const State &gbm = board._board;
     const int rows = gbm.rows();
