@@ -28,6 +28,8 @@ VSAT::VSAT(float val, std::vector<State> sts, std::vector<int64_t> acts)
 SAT::SAT(State st, std::vector<State> sts, std::vector<int64_t> acts)
         : state(std::move(st)), states(std::move(sts)), actions(std::move(acts)) {}
 
+VP::VP(Vector7f v, Vector7f p) : values(std::move(v)), probabilities(std::move(p)) {}
+
 Vector7f generate_dirichlet(const Vector7d &alpha) {
     Vector7d output(Vector7d::Zero());
     double *output_ptr = output.data();

@@ -28,6 +28,7 @@ public:
     bool is_leaf(const State &state);
     void search_batch(int64_t count, int64_t batch_size);
     void search_minibatch(int64_t count);
+    VP get_policy_value(const State &state, int64_t tau = 1);
 };
 
 

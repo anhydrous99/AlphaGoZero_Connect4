@@ -70,6 +70,13 @@ struct SAT { // State action trajectory
     SAT(State st, std::vector<State> sts, std::vector<int64_t> acts);
 };
 
+struct VP { // Value probabilities
+   Vector7f values;
+   Vector7f probabilities;
+
+   VP(Vector7f v, Vector7f p);
+};
+
 Vector7f generate_dirichlet(const Vector7d &alpha);
 
 template<typename T>
