@@ -113,7 +113,7 @@ void MCTS::search_minibatch(int64_t count) {
     // Perform backup of the searches
     for (const auto& queue : backup_queue) {
         float current_value = -queue.value;
-        for (uint64_t i = queue.states.size() - 1; i >= 0; i--) {
+        for (int64_t i = queue.states.size() - 1; i >= 0; i--) {
             const State &state = queue.states[i];
             const int64_t action = queue.actions[i];
             _visit_count[state][action] += 1;
@@ -134,7 +134,7 @@ VP MCTS::get_policy_value(const State &state, int64_t tau) {
     } else {
         counts = Eigen::pow(counts, 1.0f / tau);
         int64_t total = counts.sum();
-        probs = counts / total;
+        probs = counts.cast<float>() / total;
     }
     auto values = _value_avg[state];
     return {values, probs};
