@@ -53,3 +53,23 @@ TensorPair ModelImpl::forward(torch::Tensor x) {
     policy = linearPolicy(policy);
     return {policy, value};
 }
+
+void sync_weights(Model &output_model, const Model &input_model) {
+    torch::autograd::GradMode::set_enabled(false);
+    auto input_params = input_model->named_parameters(true);
+    auto input_buffers = input_model->named_buffers(true);
+    auto output_params = output_model->named_parameters(true);
+    auto output_buffers = output_model->named_buffers(true);
+    for (const auto& val : input_params) {
+        const auto& name = val.key();
+        auto* t = output_params.find(name);
+        if (t != nullptr)
+            t->copy_(val.value());
+        else {
+            t = output_buffers.find(name);
+            if (t != nullptr)
+                t->copy_(val.value());
+        }
+    }
+    torch::autograd::GradMode::set_enabled(true);
+}

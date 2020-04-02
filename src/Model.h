@@ -28,4 +28,6 @@ struct ModelImpl : torch::nn::Module {
 };
 TORCH_MODULE(Model);
 
+void sync_weights(Model &output_model, const Model &input_model);
+
 #endif //ALPHAZERO_CONNECT4_MODEL_H
