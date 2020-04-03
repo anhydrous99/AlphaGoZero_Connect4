@@ -22,7 +22,7 @@ enum Player {
 template<typename T>
 T player_to_index(Player player) {
     assert(std::is_integral<T>::value);
-    return static_cast<T>(player);
+    return static_cast<T>(player) - 1;
 }
 
 // -1 for white, 0 for none, 1 for black
