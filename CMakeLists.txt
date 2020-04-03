@@ -8,5 +8,15 @@ find_package(Torch REQUIRED)
 find_package(Eigen3 REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
-add_executable(AlphaZero_Connect4 src/main.cpp src/GameBoard.cpp src/GameBoard.h src/MCTS.cpp src/MCTS.h src/Model.cpp src/Model.h src/utils.cpp src/utils.h)
+add_executable(AlphaZero_Connect4
+        src/main.cpp
+        src/GameBoard.cpp
+        src/GameBoard.h
+        src/MCTS.cpp
+        src/MCTS.h
+        src/Model.cpp
+        src/Model.h
+        src/utils.cpp
+        src/utils.h
+        src/FixedQueue.h)
 target_link_libraries(AlphaZero_Connect4 ${TORCH_LIBRARIES} Eigen3::Eigen GSL::gsl)
