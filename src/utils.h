@@ -19,6 +19,12 @@ enum Player {
     Player2
 };
 
+template<typename T>
+T player_to_index(Player player) {
+    assert(std::is_integral<T>::value);
+    return static_cast<T>(player);
+}
+
 // -1 for white, 0 for none, 1 for black
 typedef Eigen::Matrix<Player, 6, 7> State;
 typedef Eigen::Array<int64_t, 7, 1> Vector7i;
@@ -75,6 +81,22 @@ struct VP { // Value probabilities
    Vector7f probabilities;
 
    VP(Vector7f v, Vector7f p);
+};
+
+struct BufferEntry {
+    State state;
+    Player player;
+    Vector7f probabilities;
+    int8_t result;
+
+    BufferEntry(State st, Player pl, Vector7f prob, int8_t res);
+};
+
+struct GameResult {
+    int8_t result;
+    int64_t step;
+
+    GameResult(int8_t res, int64_t st);
 };
 
 Vector7f generate_dirichlet(const Vector7d &alpha);

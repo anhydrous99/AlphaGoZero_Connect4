@@ -30,6 +30,11 @@ SAT::SAT(State st, std::vector<State> sts, std::vector<int64_t> acts)
 
 VP::VP(Vector7f v, Vector7f p) : values(std::move(v)), probabilities(std::move(p)) {}
 
+BufferEntry::BufferEntry(State st, Player pl, Vector7f prob, int8_t res)
+        : state(std::move(st)), player(pl), probabilities(std::move(prob)), result(res) {}
+
+GameResult::GameResult(int8_t res, int64_t st) : result(res), step(st) {}
+
 Vector7f generate_dirichlet(const Vector7d &alpha) {
     Vector7d output(Vector7d::Zero());
     double *output_ptr = output.data();
