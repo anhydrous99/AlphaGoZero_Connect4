@@ -22,7 +22,13 @@ enum Player {
 template<typename T>
 T player_to_index(Player player) {
     assert(std::is_integral<T>::value);
-    return static_cast<T>(player) - 1;
+    return static_cast<T>(player) - 1; // Player1, Player2 -> 0, 1
+}
+
+template<typename T>
+Player index_to_player(T index) {
+    assert(std::is_integral<T>::value);
+    return static_cast<Player>(index + 1); // 0, 1 -> Player1, Player2
 }
 
 // -1 for white, 0 for none, 1 for black
