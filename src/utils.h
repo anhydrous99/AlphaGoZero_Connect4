@@ -84,10 +84,10 @@ struct SAT { // State action trajectory
 };
 
 struct VP { // Value probabilities
-   Vector7f values;
-   Vector7f probabilities;
+    Vector7f values;
+    Vector7f probabilities;
 
-   VP(Vector7f v, Vector7f p);
+    VP(Vector7f v, Vector7f p);
 };
 
 struct BufferEntry {
@@ -171,13 +171,13 @@ Derived toEigen(const torch::Tensor &tensor) {
 }
 
 torch::Tensor get_state_tensor(const State &state);
+
 torch::Tensor get_states_tensors(const std::vector<State> &states);
 
-template<typename T>
-T randint_range(T low, T high, uint32_t seed=0) {
-    if (seed == 0)
-        seed = std::random_device()();
-    return std::uniform_int_distribution<T>(low, high)(seed);
+template<typename T, typename RNG>
+T randint_range(T low, T high, RNG& g) {
+    std::uniform_int_distribution<int64_t> dist(static_cast<int64_t>(low), static_cast<int64_t>(high));
+    return static_cast<T>(dist(g));
 }
 
 #endif //ALPHAZERO_CONNECT4_UTILS_H

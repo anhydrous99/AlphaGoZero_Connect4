@@ -39,7 +39,7 @@ GameResult
 play_game(const std::vector<MCTS> &mcts_store, FixedQueue<BufferEntry, REPLAY_BUFFER> &replay_buffer, Model &net1,
           Model &net2, int64_t steps_before_tau_0, int64_t mcts_searches, int64_t mcts_batch_size) {
     std::mt19937 gen((std::random_device())()); // Init randomness generator
-    GameBoard board(randint_range(Player::Player1, Player::Player2, gen()));
+    GameBoard board(randint_range(Player::Player1, Player::Player2, gen));
     std::vector<MCTS> mcts_stores;
     if (mcts_store.empty()) {
         mcts_stores.emplace_back(MCTS(&board, &net1));
