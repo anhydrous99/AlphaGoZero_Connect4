@@ -5,8 +5,8 @@
 #include "GamePlay.h"
 
 GameResult
-play_game(const std::vector<MCTS> &mcts_store, FixedQueue<BufferEntry, REPLAY_BUFFER> &replay_buffer, Model &net1,
-          Model &net2, int64_t steps_before_tau_0, int64_t mcts_searches, int64_t mcts_batch_size) {
+play_game(const std::vector<MCTS> &mcts_store, FixedQueue<BufferEntry, REPLAY_BUFFER> *replay_buffer, Model &net1,
+          Model &net2, int64_t steps_before_tau_0, int64_t mcts_searches, int64_t mcts_batch_size, bool use_replay) {
     std::mt19937 gen((std::random_device()) ()); // Init randomness generator
     GameBoard board(randint_range(Player::Player1, Player::Player2, gen));
     std::vector<MCTS> mcts_stores;
@@ -55,10 +55,28 @@ play_game(const std::vector<MCTS> &mcts_store, FixedQueue<BufferEntry, REPLAY_BU
             tau = 0;
     }
 
-    for (auto it = game_history.rbegin(); it != game_history.rend(); ++it) {
-        replay_buffer.emplace(it->state, it->player, it->probabilities, res);
-        res = -res;
+    if (use_replay) {
+        for (auto it = game_history.rbegin(); it != game_history.rend(); ++it) {
+            replay_buffer->emplace(it->state, it->player, it->probabilities, res);
+            res = -res;
+        }
     }
     output.step = step;
     return output;
+}
+
+float evaluate(Model &net1, Model &net2, int64_t rounds) {
+    int64_t n1_win = 0, n2_win = 0;
+    GameBoard board;
+    std::vector<MCTS> mcts{MCTS(&board, &net1), MCTS(&board, &net2)};
+    GameResult result;
+
+    for (int i = 0; i < rounds; i++)
+        result = play_game(mcts, nullptr, net1, net2, 0, 20, 16, false);
+
+    if (result.result < -0.5)
+        n2_win++;
+    else if (result.result > 0.5)
+        n1_win++;
+    return static_cast<float>(n1_win) / static_cast<float>(n1_win + n2_win);
 }
