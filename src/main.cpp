@@ -23,12 +23,12 @@ int main() {
     FixedQueue<BufferEntry, REPLAY_BUFFER> replay_buffer;
     GameBoard board;
     MCTS mcts(&net);
-    std::vector<MCTS*> mcts_list{&mcts};
+    std::vector<MCTS *> mcts_list{&mcts};
     uint64_t step_idx = 0, best_idx = 0;
 
     std::mt19937 random_generator((std::random_device()()));
 
-    while (true) {
+    for (int64_t idx = 0; idx < MAX_STEPS; idx++) {
         auto t = std::chrono::high_resolution_clock::now();
         uint64_t prev_nodes = mcts.size(), game_steps = 0;
         GameResult res;
@@ -38,9 +38,8 @@ int main() {
             game_steps += res.step;
         }
         auto game_nodes = mcts.size() - prev_nodes;
-        uint64_t dt = std::chrono::duration_cast<std::chrono::seconds>(
-                std::chrono::high_resolution_clock::now() - t).count();
-        uint64_t speed_steps = game_steps / dt, speed_nodes = game_nodes / dt;
+        std::chrono::duration<float> dt = std::chrono::high_resolution_clock::now() - t;
+        float speed_steps = game_steps / dt.count(), speed_nodes = game_nodes / dt.count();
         std::cout << "Step " << step_idx << ", steps " << game_steps << ", leaves " << game_nodes << ", steps/s "
                   << speed_steps << ", leaves/s " << speed_nodes << ", best_idx " << best_idx << ", replay "
                   << replay_buffer.size() << std::endl;
@@ -52,7 +51,8 @@ int main() {
         // Train
         float sum_loss = 0.0f, sum_value_loss = 0.0f, sum_policy_loss = 0.0f;
         for (int i = 0; i < TRAIN_ROUNDS; i++) {
-            auto batch = sample(replay_buffer.begin(), replay_buffer.end(), BATCH_SIZE, random_generator);
+            std::vector<BufferEntry> batch = sample(replay_buffer.begin(), replay_buffer.end(), BATCH_SIZE,
+                                                    random_generator);
         }
     }
 

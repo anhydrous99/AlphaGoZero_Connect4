@@ -30,15 +30,16 @@ SAT::SAT(State st, std::vector<State> sts, std::vector<int64_t> acts)
 
 VP::VP(Vector7f v, Vector7f p) : values(std::move(v)), probabilities(std::move(p)) {}
 
-BufferEntry::BufferEntry() : state(State::Zero()), player(Player::None), probabilities(Vector7f::Zero()), result(0) {}
+BufferEntry::BufferEntry() : state(State::Zero()), player(Player::None), probability(Vector7f::Zero()), result(0) {}
 
 BufferEntry::BufferEntry(State st, Player pl, Vector7f prob, int8_t res)
-        : state(std::move(st)), player(pl), probabilities(std::move(prob)), result(res) {}
+        : state(std::move(st)), player(pl), probability(std::move(prob)), result(res) {}
 
 HistoryEntry::HistoryEntry(State st, Player pl, Vector7f prob)
         : state(std::move(st)), player(pl), probabilities(std::move(prob)) {}
 
 GameResult::GameResult() : result(0), step(0) {}
+
 GameResult::GameResult(int8_t res, int64_t st) : result(res), step(st) {}
 
 Vector7f generate_dirichlet(const Vector7d &alpha) {
@@ -78,7 +79,7 @@ torch::Tensor get_state_tensor(const State &state) {
 
 torch::Tensor get_states_tensors(const std::vector<State> &states) {
     std::vector<torch::Tensor> tensor_list;
-    for (const auto& state : states)
+    for (const auto &state : states)
         tensor_list.push_back(get_state_tensor(state));
     return torch::stack(tensor_list);
 }

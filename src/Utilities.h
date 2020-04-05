@@ -82,7 +82,7 @@ struct SAT { // State action trajectory
     SAT(State st, std::vector<State> sts, std::vector<int64_t> acts);
 };
 
-struct VP { // Value probabilities
+struct VP { // Value probability
     Vector7f values;
     Vector7f probabilities;
 
@@ -92,7 +92,7 @@ struct VP { // Value probabilities
 struct BufferEntry {
     State state;
     Player player;
-    Vector7f probabilities;
+    Vector7f probability;
     int8_t result;
 
     BufferEntry();
