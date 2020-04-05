@@ -1,28 +1,36 @@
 #include <iostream>
+#include <chrono>
+#include <torch/torch.h>
 #include "FixedQueue.h"
-#include "Model.h"
 #include "Utilities.h"
+#include "GamePlay.h"
 #include "Defines.h"
+#include "Model.h"
+#include "MCTS.h"
 
 int main() {
-    std::vector<int64_t> input_shape{2, 6, 7};
-    torch::Tensor input_tensor = torch::rand(input_shape);
-    input_tensor = torch::unsqueeze(input_tensor, 0);
-    Model model1(input_shape, 7, 64);
-    Model model2(input_shape, 7, 64);
+    std::vector<int64_t> obs_shape{2, 6, 7};
+    int64_t n_actions = N_ACTIONS, n_filters = N_FILTERS;
 
-    TensorPair pair1 = model1(input_tensor);
-    TensorPair pair2 = model2(input_tensor);
+    Model net(obs_shape, n_actions, n_filters);
+    Model best_net(obs_shape, n_actions, n_filters);
+    sync_weights(best_net, net);
+    std::cout << net;
 
-    std::cout << "Tensor 1: \n" << pair1.tensor1 << std::endl;
-    std::cout << "Tensor 2: \n" << pair2.tensor1 << std::endl;
+    torch::optim::Adam optimizer(net->parameters(), torch::optim::AdamOptions(LEARNING_RATE));
 
-    sync_weights(model1, model2);
+    FixedQueue<BufferEntry, REPLAY_BUFFER> replay_buffer;
+    GameBoard board;
+    MCTS mcts(&board, &net);
+    uint64_t step_idx = 0, best_idx = 0;
 
-    pair1 = model1(input_tensor);
-    pair2 = model2(input_tensor);
+    while (true) {
+        auto t = std::chrono::time_point::now();
+        uint64_t prev_nodes = mcts.size(), game_steps = 0;
+        GameResult res;
+        for (int i = 0; i < PLAY_EPISODES; i++)
+            res = play_game(std::vector<MCTS>{mcts}, &replay_buffer, )
+    }
 
-    std::cout << "Tensor 1: \n" << pair1.tensor1 << std::endl;
-    std::cout << "Tensor 2: \n" << pair2.tensor1 << std::endl;
     return 0;
 }
