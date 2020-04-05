@@ -8,6 +8,7 @@
 #include <torch/torch.h>
 #include <Eigen/Core>
 #include <type_traits>
+#include <iterator>
 #include <numeric>
 #include <random>
 #include <limits>
@@ -94,6 +95,7 @@ struct BufferEntry {
     Vector7f probabilities;
     int8_t result;
 
+    BufferEntry();
     BufferEntry(State st, Player pl, Vector7f prob, int8_t res);
 };
 
@@ -188,5 +190,24 @@ T randint_range(T low, T high, RNG& g) {
 }
 
 size_t generate_choices(const Vector7d &P);
+
+template<typename Itr, typename URNG>
+std::vector<typename std::iterator_traits<Itr>::value_type>
+sample(Itr first, Itr last, typename std::iterator_traits<Itr>::difference_type k, URNG &&g) {
+    typedef typename std::iterator_traits<Itr>::difference_type diff_type;
+    typedef typename std::iterator_traits<Itr>::value_type val_type;
+    diff_type i = 0;
+    diff_type n = last - first;
+    std::vector<val_type> reservoir(k);
+    for (; i < k; i++)
+        reservoir[i] = first[i];
+    for (; i < n; i++) {
+        std::uniform_int_distribution<diff_type> d(0, i);
+        diff_type j = d(g);
+        if (j < k)
+            reservoir[j] = first[i];
+    }
+    return reservoir;
+}
 
 #endif //ALPHAZERO_CONNECT4_UTILITIES_H

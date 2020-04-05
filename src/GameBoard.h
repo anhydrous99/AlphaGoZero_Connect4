@@ -19,6 +19,7 @@ class GameBoard {
 public:
     GameBoard();
     explicit GameBoard(Player turn);
+    GameBoard(State init_board, Player turn);
     bool check_won(Player player);
     bool check_done();
     Player winner();

@@ -12,6 +12,8 @@ GameBoard::GameBoard(Player turn) : _board(State::Constant(Player::None)) {
     _turn = turn;
 }
 
+GameBoard::GameBoard(State init_board, Player turn) : _board(std::move(init_board)), _turn(turn) {}
+
 void GameBoard::change_turn() {
     assert(_turn == Player::Player1 || _turn == Player::Player2);
     if (_turn == Player::Player1)
@@ -88,7 +90,7 @@ MoveResult GameBoard::move(int64_t col, Player player) {
             return {_board, check_won(player)};
         }
     }
-    return {_board, false}; // No spot available
+    return {_board, check_done()}; // No spot available
 }
 
 std::vector<int64_t> GameBoard::invalid_actions() {

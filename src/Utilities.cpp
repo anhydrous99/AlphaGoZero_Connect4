@@ -30,6 +30,8 @@ SAT::SAT(State st, std::vector<State> sts, std::vector<int64_t> acts)
 
 VP::VP(Vector7f v, Vector7f p) : values(std::move(v)), probabilities(std::move(p)) {}
 
+BufferEntry::BufferEntry() : state(State::Zero()), player(Player::None), probabilities(Vector7f::Zero()), result(0) {}
+
 BufferEntry::BufferEntry(State st, Player pl, Vector7f prob, int8_t res)
         : state(std::move(st)), player(pl), probabilities(std::move(prob)), result(res) {}
 
