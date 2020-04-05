@@ -1,5 +1,5 @@
 //
-// Created by constexpr_dog on 4/3/20.
+// Created by Armando Herrera on 4/3/20.
 //
 
 #ifndef ALPHAZERO_CONNECT4_FIXEDQUEUE_H

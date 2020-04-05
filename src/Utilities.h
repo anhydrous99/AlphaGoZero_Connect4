@@ -1,9 +1,9 @@
 //
-// Created by aherrera on 3/29/20.
+// Created by Armando Herrera on 3/29/20.
 //
 
-#ifndef ALPHAZERO_CONNECT4_UTILS_H
-#define ALPHAZERO_CONNECT4_UTILS_H
+#ifndef ALPHAZERO_CONNECT4_UTILITIES_H
+#define ALPHAZERO_CONNECT4_UTILITIES_H
 
 #include <torch/torch.h>
 #include <Eigen/Core>
@@ -189,4 +189,4 @@ T randint_range(T low, T high, RNG& g) {
 
 size_t generate_choices(const Vector7d &P);
 
-#endif //ALPHAZERO_CONNECT4_UTILS_H
+#endif //ALPHAZERO_CONNECT4_UTILITIES_H

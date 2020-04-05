@@ -1,5 +1,5 @@
 //
-// Created by aherrera on 3/28/20.
+// Created by Armando Herrera on 3/28/20.
 //
 
 #include "Model.h"

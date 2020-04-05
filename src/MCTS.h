@@ -1,5 +1,5 @@
 //
-// Created by aherrera on 3/27/20.
+// Created by Armando Herrera on 3/27/20.
 //
 
 #ifndef ALPHAZERO_CONNECT4_MCTS_H
@@ -7,7 +7,7 @@
 
 #include <map>
 #include <cstdint>
-#include "utils.h"
+#include "Utilities.h"
 #include "Model.h"
 #include "GameBoard.h"
 

@@ -1,8 +1,8 @@
 //
-// Created by aherrera on 3/29/20.
+// Created by Armando Herrera on 3/29/20.
 //
 
-#include "utils.h"
+#include "Utilities.h"
 
 #include <utility>
 #include <gsl/gsl_randist.h>

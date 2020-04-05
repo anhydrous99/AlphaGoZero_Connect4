@@ -1,5 +1,5 @@
 //
-// Created by aherrera on 3/26/20.
+// Created by Armando Herrera on 3/26/20.
 //
 
 #include "GameBoard.h"

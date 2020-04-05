@@ -1,5 +1,5 @@
 //
-// Created by aherrera on 3/26/20.
+// Created by Armando Herrera on 3/26/20.
 //
 
 #ifndef ALPHAZERO_CONNECT4_GAMEBOARD_H
@@ -8,7 +8,7 @@
 #include <Eigen/Core>
 #include <torch/torch.h>
 #include <ostream>
-#include "utils.h"
+#include "Utilities.h"
 
 class GameBoard {
     State _board;

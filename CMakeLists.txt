@@ -16,7 +16,10 @@ add_executable(AlphaZero_Connect4
         src/MCTS.h
         src/Model.cpp
         src/Model.h
-        src/utils.cpp
-        src/utils.h
-        src/FixedQueue.h)
+        src/Utilities.cpp
+        src/Utilities.h
+        src/FixedQueue.h
+        src/GamePlay.cpp
+        src/GamePlay.h
+        src/Defines.h)
 target_link_libraries(AlphaZero_Connect4 ${TORCH_LIBRARIES} Eigen3::Eigen GSL::gsl)

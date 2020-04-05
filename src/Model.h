@@ -1,12 +1,12 @@
 //
-// Created by aherrera on 3/28/20.
+// Created by Armando Herrera on 3/28/20.
 //
 
 #ifndef ALPHAZERO_CONNECT4_MODEL_H
 #define ALPHAZERO_CONNECT4_MODEL_H
 
 #include <torch/torch.h>
-#include "utils.h"
+#include "Utilities.h"
 
 struct ConvBlockImpl : torch::nn::Module {
     ConvBlockImpl(int64_t input_channels, int64_t output_chennels, int64_t kernel_size, bool padding);
