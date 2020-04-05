@@ -32,7 +32,6 @@ Player index_to_player(T index) {
     return static_cast<Player>(index + 1); // 0, 1 -> Player1, Player2
 }
 
-// -1 for white, 0 for none, 1 for black
 typedef Eigen::Matrix<Player, 6, 7> State;
 typedef Eigen::Array<int64_t, 7, 1> Vector7i;
 typedef Eigen::Array<float, 7, 1> Vector7f;
@@ -45,7 +44,6 @@ struct TensorPair {
     torch::Tensor tensor2;
 
     TensorPair() = default;
-
     TensorPair(const torch::Tensor &t1, const torch::Tensor &t2);
 };
 
@@ -99,10 +97,19 @@ struct BufferEntry {
     BufferEntry(State st, Player pl, Vector7f prob, int8_t res);
 };
 
+struct HistoryEntry {
+    State state;
+    Player player;
+    Vector7f probabilities;
+
+    HistoryEntry(State st, Player pl, Vector7f prob);
+};
+
 struct GameResult {
     int8_t result;
     int64_t step;
 
+    GameResult();
     GameResult(int8_t res, int64_t st);
 };
 
@@ -179,5 +186,7 @@ T randint_range(T low, T high, RNG& g) {
     std::uniform_int_distribution<int64_t> dist(static_cast<int64_t>(low), static_cast<int64_t>(high));
     return static_cast<T>(dist(g));
 }
+
+size_t generate_choices(const Vector7d &P);
 
 #endif //ALPHAZERO_CONNECT4_UTILS_H

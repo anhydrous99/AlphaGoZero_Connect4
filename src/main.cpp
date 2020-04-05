@@ -53,4 +53,43 @@ play_game(const std::vector<MCTS> &mcts_store, FixedQueue<BufferEntry, REPLAY_BU
 
     auto state = board.get_state();
     std::vector<Model> nets{net1, net2};
+    int64_t step = 0;
+    int64_t tau = (steps_before_tau_0 > 0) ? 1 : 0;
+    std::vector<HistoryEntry> game_history;
+
+    GameResult output;
+
+    uint8_t res;
+    while (true) {
+        Player player = board.get_current_turn();
+        auto idx = player_to_index<int64_t>(player);
+        mcts_stores[idx].search_batch(mcts_searches, mcts_batch_size);
+        VP store = mcts_stores[idx].get_policy_value(state, tau);
+        game_history.emplace_back(state, player, store.probabilities);
+        int64_t action = generate_choices(store.probabilities.cast<double>());
+        auto possible_moves = board.possible_moves();
+        if (std::find(possible_moves.begin(), possible_moves.end(), action) == possible_moves.end())
+            std::cerr << "Impossible action selected\n";
+        MoveResult result = board.move(action);
+        if (result.done) {
+            output.result = (board.get_current_turn() == Player::Player1) ? 0 : -1;
+            res = 1;
+            break;
+        }
+        if (possible_moves.empty()) {
+            output.result = 0;
+            res = 0;
+            break;
+        }
+        step++;
+        if (step >= steps_before_tau_0)
+            tau = 0;
+    }
+
+    for (auto it = game_history.rbegin(); it != game_history.rend(); ++it) {
+        replay_buffer.emplace(it->state, it->player, it->probabilities, res);
+        res = -res;
+    }
+    output.step = step;
+    return output;
 }

@@ -14,7 +14,10 @@ public:
     typedef typename Container::iterator iterator;
     typedef typename Container::const_iterator const_iterator;
 
-    void push(const T& value) override;
+    void push(const T &value);
+
+    template<class... Ts>
+    decltype(auto) emplace(Ts&&... values);
 
     iterator begin() { return this->c.begin(); }
     iterator end() { return this->c.end(); }
@@ -24,11 +27,17 @@ public:
 
 template<typename T, int MaxLen, typename Container>
 void FixedQueue<T, MaxLen, Container>::push(const T &value) {
-    if (this->size() == MaxLen) {
+    if (this->size() == MaxLen)
         this->c.pop_front();
-    }
     std::queue<T, Container>::push(value);
 }
 
+template<typename T, int MaxLen, typename Container>
+template<class... Ts>
+decltype(auto) FixedQueue<T, MaxLen, Container>::emplace(Ts &&... values) {
+    if (this->size() == MaxLen)
+        this->c.pop_front();
+    this->c.emplace_back(std::forward<Ts>(values)...);
+}
 
 #endif //ALPHAZERO_CONNECT4_FIXEDQUEUE_H

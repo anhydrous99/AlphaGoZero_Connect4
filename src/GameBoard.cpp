@@ -141,14 +141,14 @@ Player GameBoard::get_current_turn() {
 
 std::ostream &operator<<(std::ostream &out, const GameBoard &board) {
     const State &gbm = board._board;
-    const int rows = gbm.rows();
-    const int cols = gbm.cols();
-    for (int i = 0; i < cols + 1; i++)
+    const long rows = gbm.rows();
+    const long cols = gbm.cols();
+    for (long i = 0; i < cols + 1; i++)
         out << '_';
     out << "_\n";
-    for (int i = 0; i < rows; i++) {
+    for (long i = 0; i < rows; i++) {
         out << '|';
-        for (int j = 0; j < cols; j++) {
+        for (long j = 0; j < cols; j++) {
             Player value = gbm(i, j);
             if (value == Player::Player1)
                 out << '+';
@@ -159,7 +159,7 @@ std::ostream &operator<<(std::ostream &out, const GameBoard &board) {
         }
         out << "|\n";
     }
-    for (int i = 0; i < cols + 1; i++)
+    for (long i = 0; i < cols + 1; i++)
         out << '-';
     out << "-\n";
     return out;
