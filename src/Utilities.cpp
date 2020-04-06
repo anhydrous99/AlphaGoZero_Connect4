@@ -117,3 +117,9 @@ size_t generate_choices(const Vector7d &P) {
     gsl_rng_free(r);
     return output;
 }
+
+std::string name_generator(int64_t best_idx, int64_t step_idx) {
+    std::stringstream output_stream;
+    output_stream << "best_" << best_idx << "_" << step_idx << ".pt";
+    return output_stream.str();
+}

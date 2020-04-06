@@ -34,7 +34,7 @@ int main() {
         GameResult res;
         for (int i = 0; i < PLAY_EPISODES; i++) {
             res = play_game(mcts_list, &replay_buffer, target_net, target_net, STEPS_BEFORE_TAU_0,
-                            MCTS_SEARCHES, MCTS_BATCH_SUZE, true);
+                            MCTS_SEARCHES, MCTS_BATCH_SIZE, true);
             game_steps += res.step;
         }
         auto game_nodes = mcts.size() - prev_nodes;
@@ -74,6 +74,7 @@ int main() {
             if (win_ratio > BEST_NET_WIN_RATIO) {
                 std::cout << "Net is better than current best, syncing\n";
                 sync_weights(target_net, net);
+                torch::save(net, name_generator(best_idx, step_idx));
                 best_idx++;
                 mcts.clear();
             }

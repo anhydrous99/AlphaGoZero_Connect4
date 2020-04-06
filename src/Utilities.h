@@ -218,4 +218,6 @@ sample(Itr first, Itr last, typename std::iterator_traits<Itr>::difference_type 
     return reservoir;
 }
 
+std::string name_generator(int64_t best_idx, int64_t step_idx);
+
 #endif //ALPHAZERO_CONNECT4_UTILITIES_H
