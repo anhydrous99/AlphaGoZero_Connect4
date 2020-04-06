@@ -45,7 +45,7 @@ struct TensorPair {
     torch::Tensor tensor2;
 
     TensorPair() = default;
-    TensorPair(const torch::Tensor &t1, const torch::Tensor &t2);
+    TensorPair(torch::Tensor t1, torch::Tensor t2);
 };
 
 struct MoveResult {
@@ -97,6 +97,14 @@ struct BufferEntry {
 
     BufferEntry();
     BufferEntry(State st, Player pl, Vector7f prob, int8_t res);
+};
+
+struct BufferTensor {
+    torch::Tensor states;
+    torch::Tensor probabilities;
+    torch::Tensor values;
+
+    explicit BufferTensor(const std::vector<BufferEntry> &entries);
 };
 
 struct HistoryEntry {

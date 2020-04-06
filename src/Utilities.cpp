@@ -14,7 +14,7 @@ bool operator<(const State &a, const State &b) {
     );
 }
 
-TensorPair::TensorPair(const torch::Tensor &t1, const torch::Tensor &t2) : tensor1(t1), tensor2(t1) {}
+TensorPair::TensorPair(torch::Tensor t1, torch::Tensor t2) : tensor1(std::move(t1)), tensor2(std::move(t2)) {}
 
 MoveResult::MoveResult(State st, bool wn) : state(std::move(st)), done(wn) {}
 
@@ -34,6 +34,20 @@ BufferEntry::BufferEntry() : state(State::Zero()), player(Player::None), probabi
 
 BufferEntry::BufferEntry(State st, Player pl, Vector7f prob, int8_t res)
         : state(std::move(st)), player(pl), probability(std::move(prob)), result(res) {}
+
+BufferTensor::BufferTensor(const std::vector<BufferEntry> &entries) {
+    std::vector<torch::Tensor> state_tensor_vector;
+    std::vector<torch::Tensor> probabilities_tensor_vector;
+    std::vector<torch::Tensor> values_tensor_vector;
+    for (const auto& entry : entries) {
+        state_tensor_vector.push_back(get_state_tensor(entry.state));
+        probabilities_tensor_vector.push_back(toTensor(entry.probability));
+        values_tensor_vector.push_back(torch::tensor(entry.result));
+    }
+    states = torch::stack(state_tensor_vector);
+    probabilities = torch::stack(probabilities_tensor_vector);
+    values = torch::stack(values_tensor_vector).to(torch::dtype(torch::kFloat32));
+}
 
 HistoryEntry::HistoryEntry(State st, Player pl, Vector7f prob)
         : state(std::move(st)), player(pl), probabilities(std::move(prob)) {}

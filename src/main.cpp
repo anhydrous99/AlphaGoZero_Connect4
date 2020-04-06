@@ -14,8 +14,8 @@ int main() {
     int64_t n_actions = N_ACTIONS, n_filters = N_FILTERS;
 
     Model net(obs_shape, n_actions, n_filters);
-    Model best_net(obs_shape, n_actions, n_filters);
-    sync_weights(best_net, net);
+    Model target_net(obs_shape, n_actions, n_filters);
+    sync_weights(target_net, net);
     std::cout << net;
 
     torch::optim::Adam optimizer(net->parameters(), torch::optim::AdamOptions(LEARNING_RATE));
@@ -33,7 +33,7 @@ int main() {
         uint64_t prev_nodes = mcts.size(), game_steps = 0;
         GameResult res;
         for (int i = 0; i < PLAY_EPISODES; i++) {
-            res = play_game(mcts_list, &replay_buffer, best_net, best_net, STEPS_BEFORE_TAU_0,
+            res = play_game(mcts_list, &replay_buffer, target_net, target_net, STEPS_BEFORE_TAU_0,
                             MCTS_SEARCHES, MCTS_BATCH_SUZE, true);
             game_steps += res.step;
         }
@@ -53,6 +53,30 @@ int main() {
         for (int i = 0; i < TRAIN_ROUNDS; i++) {
             std::vector<BufferEntry> batch = sample(replay_buffer.begin(), replay_buffer.end(), BATCH_SIZE,
                                                     random_generator);
+            BufferTensor bufferTensor(batch);
+            optimizer.zero_grad();
+            TensorPair pair = net(bufferTensor.states);
+
+            auto loss_value_tensor = torch::mse_loss(pair.tensor2.squeeze(-1), bufferTensor.values);
+            auto loss_policy_tensor = -torch::log_softmax(pair.tensor1, 1) * bufferTensor.probabilities;
+            loss_policy_tensor = loss_policy_tensor.sum(1).mean();
+            auto loss_tensor = loss_policy_tensor + loss_value_tensor;
+            loss_tensor.backward();
+            optimizer.step();
+            sum_loss += loss_tensor.item<float>();
+            sum_value_loss += loss_value_tensor.item<float>();
+            sum_policy_loss += loss_policy_tensor.item<float>();
+        }
+
+        if (step_idx % EVALUATE_EVERY_STEP == 0) {
+            float win_ratio = evaluate(net, target_net, EVALUATION_ROUNDS);
+            std::cout << "Net evaluated, win ratio = " << win_ratio << std::endl;
+            if (win_ratio > BEST_NET_WIN_RATIO) {
+                std::cout << "Net is better than current best, syncing\n";
+                sync_weights(target_net, net);
+                best_idx++;
+                mcts.clear();
+            }
         }
     }
 

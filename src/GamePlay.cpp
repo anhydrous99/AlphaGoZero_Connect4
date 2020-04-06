@@ -18,7 +18,7 @@ play_game(std::vector<MCTS*> &input_mcts_store, FixedQueue<BufferEntry, REPLAY_B
     } else if (input_mcts_store.size() == 1) {
         mcts_stores.push_back(input_mcts_store[0]);
         mcts_stores.push_back(input_mcts_store[0]);
-    } else if (mcts_stores.size() == 2) {
+    } else if (input_mcts_store.size() == 2) {
         mcts_stores.push_back(input_mcts_store[0]);
         mcts_stores.push_back(input_mcts_store[1]);
     }
@@ -46,7 +46,7 @@ play_game(std::vector<MCTS*> &input_mcts_store, FixedQueue<BufferEntry, REPLAY_B
         MoveResult result = board.move(action);
         state = result.state;
         if (result.done) {
-            output.result = (board.get_current_turn() == Player::Player1) ? 0 : -1;
+            output.result = (board.get_current_turn() == Player::Player1) ? 1 : -1;
             res = 1;
             break;
         }
@@ -82,14 +82,13 @@ float evaluate(Model &net1, Model &net2, int64_t rounds) {
     std::vector<MCTS*> mcts{new MCTS(&net1), new MCTS(&net2)};
     GameResult result;
 
-    for (int i = 0; i < rounds; i++)
+    for (int i = 0; i < rounds; i++) {
         result = play_game(mcts, nullptr, net1, net2, 0, 20, 16, false);
-
-    if (result.result < -0.5)
-        n2_win++;
-    else if (result.result > 0.5)
-        n1_win++;
-
+        if (result.result < -0.5)
+            n2_win++;
+        else if (result.result > 0.5)
+            n1_win++;
+    }
     delete mcts[0];
     delete mcts[1];
     return static_cast<float>(n1_win) / static_cast<float>(n1_win + n2_win);

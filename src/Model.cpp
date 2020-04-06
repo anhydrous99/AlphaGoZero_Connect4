@@ -48,8 +48,9 @@ TensorPair ModelImpl::forward(torch::Tensor x) {
     value = value.view({value.size(0), -1});
     value = torch::leaky_relu(linearValue1(value));
     value = torch::tanh(linearValue2(value));
+
     torch::Tensor policy = convPolicy(x);
-    policy = policy.view({value.size(0), -1});
+    policy = policy.view({policy.size(0), -1});
     policy = linearPolicy(policy);
     return {policy, value};
 }
