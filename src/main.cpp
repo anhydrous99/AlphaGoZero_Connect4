@@ -20,7 +20,7 @@ int main() {
 
     torch::optim::Adam optimizer(net->parameters(), torch::optim::AdamOptions(LEARNING_RATE));
 
-    FixedQueue<BufferEntry, REPLAY_BUFFER> replay_buffer;
+    FixedQueue<BufferEntry> replay_buffer(REPLAY_BUFFER);
     GameBoard board;
     MCTS mcts(&net);
     std::vector<MCTS *> mcts_list{&mcts};

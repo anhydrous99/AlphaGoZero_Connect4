@@ -5,7 +5,7 @@
 #include "GamePlay.h"
 
 GameResult
-play_game(std::vector<MCTS*> &input_mcts_store, FixedQueue<BufferEntry, REPLAY_BUFFER> *replay_buffer, Model &net1,
+play_game(std::vector<MCTS*> &input_mcts_store, FixedQueue<BufferEntry> *replay_buffer, Model &net1,
           Model &net2, int64_t steps_before_tau_0, int64_t mcts_searches, int64_t mcts_batch_size, bool use_replay) {
     std::mt19937 gen((std::random_device()) ()); // Init randomness generator
     GameBoard board(randint_range(Player::Player1, Player::Player2, gen));
